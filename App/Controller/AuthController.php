@@ -1,22 +1,12 @@
 <?php
 
 namespace Controller;
-use Model\Borrow;
-use Model\ReturnMoney;
-use Model\KoalaPay;
-use Model\KlApi;
-use Model\StoreInfo;
-use Model\Message;
-use Model\Product;
-use Model\userCenter;
 use Leaf\Loger\LogDriver;
-use Utils\Xml;
 
 /**
- * Class NotifyController 富友回调控制器
- * @author xiaozhu
+ * Class AuthController 验证控制器
  */
-class NotifyController extends BaseController
+class AuthController extends BaseController
 {
 
     /**

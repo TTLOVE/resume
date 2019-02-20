@@ -10,40 +10,11 @@ use Service\Mail;
 
 /**
  * Class BaseController
- * @author xiaozhu
  */
 class BaseController
 {
     protected $view;
     protected $mail;
-
-    public function __construct()
-    {
-
-    }
-
-    // public function __destruct()
-    // {
-
-    //     // 导入页面
-    //     $view = $this->view;
-
-    //     if ( $view instanceof View ) {
-    //         if (is_array($view->data)) {
-    //             extract($view->data);
-    //             echo $view->view->make($view->viewName, $view->data)->render();
-
-    //         } else {
-    //             echo $view->view->make($view->viewName)->render();
-    //         }
-    //     }
-    // }
-
-    // public function redirect($url)
-    // {
-    //     header("location: ".$url);
-    //     exit;
-    // }
 
     /**
      * 输出json数据
