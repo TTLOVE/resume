@@ -1,0 +1,21 @@
+{
+  "require": {
+    "noahbuscher/macaw": "dev-master",
+    "illuminate/database": "*",
+    "filp/whoops": "*",
+    "nette/mail": "*",
+    "predis/predis": "*",
+    "xiaoler/blade": "*",
+    "symfony/var-dumper" : ">=2.7.4@stable",
+    "leaf/leaf-loger": "^1.1",
+    "php-curl-class/php-curl-class": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Controller\\": "App/Controller/",
+      "Model\\": "App/Model/",
+      "Service\\": "Service/",
+      "Utils\\": "Utils/"
+    }
+  }
+}

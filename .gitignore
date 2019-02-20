@@ -1,0 +1,4 @@
+tags
+vendor
+App/View/Cache/*
+!App/View/Cache/.gitkeep
