@@ -1,13 +1,13 @@
 <?php
 
-namespace Service;
-use Illuminate\Database\Capsule\Manager as Capsule;
+namespace Service\DataBase;
+
 use PDO as PDO;
 
 /**
  * 设置连接数据库
  */
-class DATABASE 
+class DataBaseService
 {
 
     private $Host;
@@ -33,14 +33,9 @@ class DATABASE
     public function setDataBase($dbName='')
     {
         $dbConfig = require BASE_PATH.'/Config/database.php';
-        $dbName = empty($dbName) ? 'finance' : $dbName;
+        $dbName = empty($dbName) ? 'resume' : $dbName;
 
         if ( isset($dbConfig[ $dbName ]) ) {
-            // Eloquent ORM
-            $capsule = new Capsule;
-            $capsule->addConnection($dbConfig[ $dbName ]);
-            $capsule->bootEloquent();
-
             // local pdo
             $this->dbConfig($dbConfig[ $dbName ]);
             return true;
