@@ -7,6 +7,7 @@ use Utils\StringUtils;
 use Utils\LogUtils;
 use Service\Auth\AuthService;
 use Service\Auth\AuthCacheService;
+use app\models\User;
 
 /**
  * Class AuthController 验证控制器
@@ -73,6 +74,12 @@ class AuthController extends BaseController
             } else {
                 //解密微信加密字符串
                 $decryptData = WechatUtils::decryptData(APP_ID, $sessionKey, $encryptedData, $iv);
+                $decryptData = [
+                    'openId' => '123123',
+                    'unionId' => '11111',
+                    'nickName' => '11111',
+                    'avatarUrl' => '2222222',
+                ];
 
                 if (!isset($decryptData['openId']) || !isset($decryptData['unionId']) || !isset($decryptData['nickName']) || !isset($decryptData['avatarUrl'])) {
                     $log = [
@@ -81,7 +88,7 @@ class AuthController extends BaseController
                         'decryptData'  => $decryptData,
                         'responseData' => $responseData
                     ];
-                    (new Log())->error('auth', "解密微信加密字符串失败,信息:" . json_encode($log));
+                    LogUtils::addLog('AUTH', '解密微信加密字符串失败', $log);
                     $this->echoJson(-2, '用户授权失败');
                 }
 
@@ -89,7 +96,8 @@ class AuthController extends BaseController
                 $nickname = $decryptData['nickName'];
                 $avatar = $decryptData['avatarUrl'];
 
-                //todo 注册用户
+                // 注册用户
+                $addUserResult = 
                 // try {
                 //     $passportResponse = (new PassportService())->register($openId, $unionId, $nickname, $avatar, $appId);
                 // } catch (PassportException $e) {
