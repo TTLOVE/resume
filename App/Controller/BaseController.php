@@ -13,9 +13,6 @@ use Service\Mail;
  */
 class BaseController
 {
-    protected $view;
-    protected $mail;
-
     /**
      * 输出json数据
      * @param bool $status
