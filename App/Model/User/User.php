@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace Model\User;
 
 use Service\DataBase\DataBaseService;
 
@@ -23,7 +23,7 @@ class User
      *
      * @param $insertData 插入数据
      *
-     * @return int|false
+     * @return int
      */
     public function addUser($insertData)
     {
@@ -38,8 +38,8 @@ class User
             'add_time',
             'update_time',
         ];
-        $inserStatus = $this->dbService->batchInsert($this->table, $insertParam, $insertData);
-        return $inserStatus;
+        $inserRowsCount = $this->dbService->batchInsert($this->table, $insertParam, $insertData);
+        return $inserRowsCount>0 ? $this->dbService->lastInsertId() : 0;
     }
 
     /**

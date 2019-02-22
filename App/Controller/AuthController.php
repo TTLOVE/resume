@@ -7,7 +7,7 @@ use Utils\StringUtils;
 use Utils\LogUtils;
 use Service\Auth\AuthService;
 use Service\Auth\AuthCacheService;
-use app\models\User;
+use Model\User\User;
 
 /**
  * Class AuthController 验证控制器
@@ -97,16 +97,21 @@ class AuthController extends BaseController
                 $avatar = $decryptData['avatarUrl'];
 
                 // 注册用户
-                $addUserResult = 
-                // try {
-                //     $passportResponse = (new PassportService())->register($openId, $unionId, $nickname, $avatar, $appId);
-                // } catch (PassportException $e) {
-                //     $apiResponseKey = 'user_authorization_error';
-                //     return $this->apiResponse($this->getApiCode($apiResponseKey), $this->getApiMessage($apiResponseKey));
-                // }
+                $nowTime = time();
+                $insertData[] = [
+                    $decryptData['nickName'],
+                    $decryptData['openId'],
+                    $decryptData['unionId'],
+                    $decryptData['avatarUrl'],
+                    $nowTime,
+                    $nowTime,
+                ];
+                $userId = (new User())->addUser($insertData);
 
-                //用户ID
-                $userId = $passportResponse['response']['userId'];
+                if (empty($userId)) {
+                    $this->echoJson(-3, '生成用户失败');
+                    return false;
+                }
 
                 $object = $this->handleAuthToken($userId, $userInfo['is_bind_phone'], $sessionKey);
             }
@@ -114,7 +119,7 @@ class AuthController extends BaseController
             //3. 处理授权生成token
             $object = $this->handleAuthToken($userId, $userInfo['is_bind_phone'], $sessionKey);
         }
-        return $this->echoJson(true, $object);
+        return $this->echoJson(1, $object);
     }
 
     /**
