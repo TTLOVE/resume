@@ -4,7 +4,7 @@ namespace Service\Auth;
 
 use Utils\StringUtils;
 
-class AuthService extends Service
+class AuthService 
 {
     /**
      * 临时token用户ID
@@ -38,30 +38,12 @@ class AuthService extends Service
             //token有效期时间验证
             $authCacheService = new AuthCacheService();
 
-            if ('dev' == App::getRuntimeEnv()) {
-                //若开发环境则不判断token是否一致
-                $tokenKeys = $authCacheService->keysUserTmpToken(sha1($decryptToken['randomStr']));
+            $userRedisData = $authCacheService->getUsertmpToken(sha1($decryptToken['randomStr']));
+            $userRedisData = \json_decode($userRedisData, true);
 
-                if (empty($tokenKeys)) {
-                    $routerStatusKey = 'user_tmp_token_expired';
-                    throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
-                }
-
-                $userRedisData = $authCacheService->getUserTmpToken(sha1($decryptToken['randomStr']));
-                $userRedisData = \json_decode($userRedisData, true);
-
-                $userRedisData = [
-                    'token'      => $token,
-                    'sessionKey' => isset($userRedisData['sessionKey']) ? $userRedisData['sessionKey'] : ''
-                ];
-            } else {
-                $userRedisData = $authCacheService->getUsertmpToken(sha1($decryptToken['randomStr']));
-                $userRedisData = \json_decode($userRedisData, true);
-
-                if (!isset($userRedisData['token']) || $token != $userRedisData['token']) {
-                    $routerStatusKey = 'user_tmp_token_expired';
-                    throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
-                }
+            if (!isset($userRedisData['token']) || $token != $userRedisData['token']) {
+                $routerStatusKey = 'user_tmp_token_expired';
+                throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
             }
 
             $authCacheService->setexUserTmpToken(sha1($decryptToken['randomStr']), self::DEFAULT_USER_TOKEN_EFFECTIVE_TIME, $userRedisData);
@@ -207,7 +189,7 @@ class AuthService extends Service
      */
     public function genToken($userId, $randomStr)
     {
-        $timestamp = App::getTimestamp();
+        $timestamp = time();
         $encryptKey = ENCRYPT_KEY;
 
         return StringUtils::generateToken($userId, $randomStr, $timestamp, $encryptKey);

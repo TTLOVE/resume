@@ -7,7 +7,7 @@ use Service\Redis\RedisService;
 /**
  * Redis 驱动封装
  */
-class MemService extends Client
+class MemService 
 {
     /**
      * redis服务

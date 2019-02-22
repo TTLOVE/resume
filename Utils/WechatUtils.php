@@ -3,7 +3,7 @@
 namespace Utils;
 
 use \Curl\Curl;
-use Leaf\Loger\LogDriver as Log;
+use Utils\LogUtils;
 
 class WechatUtils
 {
@@ -67,9 +67,9 @@ class WechatUtils
             $log = [
                 'phpFile'      => __FILE__,
                 'phpCodeLine'  => __LINE__,
-                'responseData' => $responseData
+                'error' => $curl->error
             ];
-            (new Log())->error('auth', "获取微信sessionKey失败,返回信息:" . json_encode($log));
+            LogUtils::addLog('AUTH', '获取微信sessionKey失败', $log);
             return '';
         }
 
@@ -79,9 +79,10 @@ class WechatUtils
             $log = [
                 'phpFile'      => __FILE__,
                 'phpCodeLine'  => __LINE__,
+                'requestData' => $param,
                 'responseData' => $responseData
             ];
-            (new Log())->error('auth', "获取微信sessionKey失败,返回信息:" . json_encode($responseData));
+            LogUtils::addLog('AUTH', '获取微信sessionKey失败', $log);
             return '';
         }
 

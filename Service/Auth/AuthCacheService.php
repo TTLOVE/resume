@@ -4,7 +4,7 @@ namespace Service\Auth;
 
 use Service\Mem\MemService as Mem;
 
-class AuthCacheService extends Service
+class AuthCacheService 
 {
     /**
      * 获取用户活动token

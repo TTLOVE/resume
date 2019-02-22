@@ -2,9 +2,9 @@
 
 namespace Controller;
 
-use Leaf\Loger\LogDriver as Log;
 use Utils\WechatUtils;
 use Utils\StringUtils;
+use Utils\LogUtils;
 use Service\Auth\AuthService;
 use Service\Auth\AuthCacheService;
 
@@ -14,6 +14,19 @@ use Service\Auth\AuthCacheService;
 class AuthController extends BaseController
 {
     /**
+     * 临时token用户ID
+     *
+     * @var int
+     */
+    const TMP_TOKEN_USER_ID = AuthService::TMP_TOKEN_USER_ID;
+    /**
+     * 默认用户token有效时间
+     *
+     * @var int
+     */
+    const DEFAULT_USER_TOKEN_EFFECTIVE_TIME = AuthService::DEFAULT_USER_TOKEN_EFFECTIVE_TIME;
+
+    /**
      * 微信授权
      *
      * @return string
@@ -21,16 +34,17 @@ class AuthController extends BaseController
     public function authorization()
     {
         $jsCode = trim($_POST['jsCode']);
-        $iv = trim($_POST['iv']);
-        $encryptedData = trim($_POST['encryptedData']);
+        $iv = isset($_POST['iv']) ? trim($_POST['iv']) : '';
+        $encryptedData = isset($_POST['encryptedData']) ? trim($_POST['encryptedData']) : ''; 
 
         // 授权信息
-        // 微信号对应appId和appSecret
-        $appId = trim($_POST['jsCode']);
-        $appSecret = trim($_POST['jsCode']);
-
         //调微信获取信息
-        $responseData = WechatUtils::getWechatSessionKey($appId, $appSecret, $jsCode);
+        $responseData = WechatUtils::getWechatSessionKey(APP_ID, APP_SECRET, $jsCode);
+
+        $responseData = [
+            'openid' => '111',
+            'session_key' => '111',
+        ];
 
         if (!isset($responseData['openid']) || empty($responseData['openid'])) {
             $log = [
@@ -38,8 +52,9 @@ class AuthController extends BaseController
                 'phpCodeLine'  => __LINE__,
                 'responseData' => $responseData
             ];
-            (new Log())->error('auth', "调微信获取信息失败,信息:" . json_encode($log));
+            LogUtils::addLog('AUTH', '调微信获取信息失败', $log);
             $this->echoJson(-1, '用户授权失败');
+            return false;
         }
 
         $sessionKey = $responseData['session_key'];
@@ -48,7 +63,8 @@ class AuthController extends BaseController
         //获取用户信息 
         // todo 读取用户信息
         //用户信息,根据openId获取用户信息
-        $userInfo = (new UserService())->getUserInfoByUserId($openId);
+        // $userInfo = (new UserService())->getUserInfoByUserId($openId);
+        $userInfo = [];
 
         if (empty($userInfo)) {
             if (empty($encryptedData) || empty($iv)) {
@@ -56,7 +72,7 @@ class AuthController extends BaseController
                 $object = $this->handleAuthTmpToken($sessionKey);
             } else {
                 //解密微信加密字符串
-                $decryptData = WechatUtils::decryptData($appId, $sessionKey, $encryptedData, $iv);
+                $decryptData = WechatUtils::decryptData(APP_ID, $sessionKey, $encryptedData, $iv);
 
                 if (!isset($decryptData['openId']) || !isset($decryptData['unionId']) || !isset($decryptData['nickName']) || !isset($decryptData['avatarUrl'])) {
                     $log = [
@@ -90,7 +106,7 @@ class AuthController extends BaseController
             //3. 处理授权生成token
             $object = $this->handleAuthToken($userId, $userInfo['is_bind_phone'], $sessionKey);
         }
-        return $response->body($data);
+        return $this->echoJson(true, $object);
     }
 
     /**

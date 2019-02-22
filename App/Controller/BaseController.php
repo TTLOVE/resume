@@ -1,12 +1,6 @@
 <?php
 
 namespace Controller;
-use Model\ClientSession;
-use Model\StoreMember;
-use Model\AppUser;
-use Model\StoreInfo;
-use Service\View;
-use Service\Mail;
 
 /**
  * Class BaseController
@@ -22,6 +16,7 @@ class BaseController
     public function echoJson($status = true, $msg = '', $data = [])
     {
         $res = json_encode(['status' => $status, 'msg' => $msg, 'data' => $data]);
-        exit($res);
+        echo $res;
+        fastcgi_finish_request();
     }
 }

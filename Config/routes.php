@@ -2,6 +2,7 @@
 
 use \NoahBuscher\Macaw\Macaw;
 use Controller\BaseController;
+use Utils\LogUtils;
 
 // 页面
 Macaw::post('v1/authorization', 'Controller\AuthController@authorization'); // 授权
@@ -12,3 +13,5 @@ Macaw::$error_callback = function() {
 };
 
 Macaw::dispatch();
+
+LogUtils::flushLog();

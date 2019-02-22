@@ -2,12 +2,11 @@
   "require": {
     "noahbuscher/macaw": "dev-master",
     "illuminate/database": "*",
-    "filp/whoops": "*",
     "nette/mail": "*",
-    "predis/predis": "*",
-    "symfony/var-dumper" : ">=2.7.4@stable",
-    "leaf/leaf-loger": "^1.1",
-    "php-curl-class/php-curl-class": "*"
+    "predis/predis": "1.1.1",
+    "php-curl-class/php-curl-class": "7.3.0",
+    "monolog/monolog": "1.22.1",
+    "filp/whoops": "2.1.14"
   },
   "autoload": {
     "psr-4": {
@@ -15,6 +14,12 @@
       "Model\\": "App/Model/",
       "Service\\": "Service/",
       "Utils\\": "Utils/"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.phpcomposer.com"
     }
   }
 }
