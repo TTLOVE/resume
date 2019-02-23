@@ -15,13 +15,9 @@ class AuthCacheService
      */
     public function getUserAliveToken($userId)
     {
-        try {
-            $memClient = Mem::getMemInstance();
-            $key = Config::G('mem_key.mem_key.user_alive_token_prefix') . $userId;
-            return $memClient->get($key);
-        } catch (ConfigNotExistsException $e) {
-            return '';
-        }
+        $memClient = Mem::getMemInstance();
+        $key = 'user_alive_token_prefix' . $userId;
+        return $memClient->get($key);
     }
 
     /**
@@ -33,13 +29,9 @@ class AuthCacheService
      */
     public function keysUserAliveToken($userId)
     {
-        try {
-            $memClient = Mem::getMemInstance();
-            $key = Config::G('mem_key.mem_key.user_alive_token_prefix') . $userId;
-            return $memClient->keys($key);
-        } catch (ConfigNotExistsException $e) {
-            return [];
-        }
+        $memClient = Mem::getMemInstance();
+        $key = 'user_alive_token_prefix' . $userId;
+        return $memClient->keys($key);
     }
 
     /**
@@ -73,7 +65,7 @@ class AuthCacheService
     {
         try {
             $memClient = Mem::getMemInstance();
-            $key = Config::G('mem_key.mem_key.user_tmp_token_prefix') . $key;
+            $key = 'user_tmp_token_prefix' . $key;
             return $memClient->get($key);
         } catch (ConfigNotExistsException $e) {
             return '';
@@ -91,7 +83,7 @@ class AuthCacheService
     {
         try {
             $memClient = Mem::getMemInstance();
-            $key = Config::G('mem_key.mem_key.user_tmp_token_prefix') . $key;
+            $key = 'user_tmp_token_prefix' . $key;
             return $memClient->keys($key);
         } catch (ConfigNotExistsException $e) {
             return [];

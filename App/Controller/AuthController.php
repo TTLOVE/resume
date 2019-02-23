@@ -44,8 +44,8 @@ class AuthController extends BaseController
 
         // todo 删除
         $responseData = [
-            'openid' => '111',
-            'session_key' => '111',
+            'openid' => '123123',
+            'session_key' => '11111',
         ];
 
         if (!isset($responseData['openid']) || empty($responseData['openid'])) {
