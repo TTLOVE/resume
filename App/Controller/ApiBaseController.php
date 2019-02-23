@@ -20,7 +20,7 @@ class ApiBaseController extends BaseController
         // 如果头部信息不为空
         if (empty($userToken))  { 
             $this->echoJson(false, 'token_not_exit');
-            exit();
+            return false;
         }
 
         // 验证token
@@ -32,7 +32,7 @@ class ApiBaseController extends BaseController
 
         if ($authRes['status']==false) {
             $this->echoJson($authRes['status'], $authRes['msg']);
-            exit();
+            return false;
         }
  
         self::$userId = $authRes['data']['userId'];

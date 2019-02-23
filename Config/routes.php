@@ -2,7 +2,6 @@
 
 use \NoahBuscher\Macaw\Macaw;
 use Controller\BaseController;
-use Utils\LogUtils;
 
 // 接口
 Macaw::post('v1/authorization', 'Controller\Auth\AuthController@authorization'); // 授权
@@ -14,5 +13,3 @@ Macaw::$error_callback = function() {
 };
 
 Macaw::dispatch();
-
-LogUtils::flushLog();

@@ -1,5 +1,7 @@
 <?php
 
+use Utils\LogUtils;
+
 //开启session
 session_start();
 
@@ -14,3 +16,5 @@ require BASE_PATH .'bootstrap.php';
 
 // 路由配置、开始处理
 require BASE_PATH . 'Config/routes.php';
+
+LogUtils::flushLog();
