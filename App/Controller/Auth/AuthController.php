@@ -2,6 +2,7 @@
 
 namespace Controller\Auth;
 
+use Controller\BaseController;
 use Utils\WechatUtils;
 use Utils\StringUtils;
 use Utils\LogUtils;
