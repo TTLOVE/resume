@@ -42,8 +42,11 @@ class AuthService
             $userRedisData = \json_decode($userRedisData, true);
 
             if (!isset($userRedisData['token']) || $token != $userRedisData['token']) {
-                $routerStatusKey = 'user_tmp_token_expired';
-                throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
+                $returnData = [
+                    'status' => false,
+                    'msg' => 'user_tmp_token_expired'
+                ];
+                return $returnData;
             }
 
             $authCacheService->setexUserTmpToken(sha1($decryptToken['randomStr']), self::DEFAULT_USER_TOKEN_EFFECTIVE_TIME, $userRedisData);
@@ -57,7 +60,10 @@ class AuthService
             $data = $this->authToken($token);
         }
 
-        return $data;
+        return [
+            'status' => true,
+            'data' => $data
+        ];
     }
 
     /**
@@ -77,37 +83,25 @@ class AuthService
 
         //使用临时token则报错
         if ($decryptToken['userId'] == self::TMP_TOKEN_USER_ID) {
-            $routerStatusKey = 'user_not_authorization';
-            throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
+            $returnData = [
+                'status' => false,
+                'msg' => 'user_not_authorization'
+            ];
+            return $returnData;
         }
 
         //token有效期时间验证
         $authCacheService = new AuthCacheService();
 
-        if ('dev' == App::getRuntimeEnv()) {
-            //若开发环境则不判断token是否一致
-            $tokenKeys = $authCacheService->keysUserAliveToken($decryptToken['userId']);
+        $userRedisData = $authCacheService->getUserAliveToken($decryptToken['userId']);
+        $userRedisData = \json_decode($userRedisData, true);
 
-            if (empty($tokenKeys)) {
-                $routerStatusKey = 'user_token_expired';
-                throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
-            }
-
-            $userRedisData = $authCacheService->getUserAliveToken($decryptToken['userId']);
-            $userRedisData = \json_decode($userRedisData, true);
-
-            $userRedisData = [
-                'token'      => $token,
-                'sessionKey' => isset($userRedisData['sessionKey']) ? $userRedisData['sessionKey'] : ''
+        if (!isset($userRedisData['token']) || $token != $userRedisData['token']) {
+            $returnData = [
+                'status' => false,
+                'msg' => 'user_token_expired'
             ];
-        } else {
-            $userRedisData = $authCacheService->getUserAliveToken($decryptToken['userId']);
-            $userRedisData = \json_decode($userRedisData, true);
-
-            if (!isset($userRedisData['token']) || $token != $userRedisData['token']) {
-                $routerStatusKey = 'user_token_expired';
-                throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
-            }
+            return $returnData;
         }
 
         $authCacheService->setexUserAliveToken($decryptToken['userId'], self::DEFAULT_USER_TOKEN_EFFECTIVE_TIME, $userRedisData);
@@ -118,7 +112,10 @@ class AuthService
             'timestamp' => $decryptToken['timestamp']
         ];
 
-        return $data;
+        return [
+            'status' => true,
+            'data' => $data
+        ];
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Controller;
+namespace Controller\Auth;
 
 use Utils\WechatUtils;
 use Utils\StringUtils;

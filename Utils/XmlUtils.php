@@ -5,7 +5,7 @@ namespace Utils;
 /**
  * Xml
  */
-class Xml
+class XmlUtils
 {
     /**
         * xml字符串转数组
