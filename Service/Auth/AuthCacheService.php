@@ -55,10 +55,8 @@ class AuthCacheService
     {
         try {
             $memClient = Mem::getMemInstance();
-            $key = Config::G('mem_key.mem_key.user_alive_token_prefix') . $userId;
+            $key = 'user_alive_token_prefix' . $userId;
             return $memClient->setex($key, $second, \json_encode($data));
-        } catch (ConfigNotExistsException $e) {
-            return false;
         } catch (RedisMemException $e) {
             return false;
         }
@@ -113,7 +111,7 @@ class AuthCacheService
     {
         try {
             $key = 'user_tmp_token_prefix' . $key;
-            $memClient = Mem::getInstance();
+            $memClient = Mem::getMemInstance();
             return $memClient->setex($key, $second, \json_encode($data));
         } catch (InvalidArgumentException $e) {
             return false;

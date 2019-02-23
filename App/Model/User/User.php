@@ -82,16 +82,14 @@ class User
      * 根据用户id更新用户最后更新时间
      *
      * @param $userId 用户id
-     * @param $userName 用户名称
-     * @param $avatarUrl 用户头像信息
      * @param $updateTime 最后更新时间
      *
      * @return array
      */
-    public function updateUserInfoById($userId, $userName, $avatarUrl, $updateTime)
+    public function updateUserUpdateTime($userId, $updateTime)
     {
-        $updateSql = 'update ' . $this->table . ' set `user_name`=?,`avatar_url`=?,`update_time`=? where `user_id` = ?';
-        $updateRows = $this->dbService->query($updateSql, [$userName, $avatarUrl, $updateTime, $userId]);
+        $updateSql = 'update ' . $this->table . ' set `update_time`=? where `user_id` = ?';
+        $updateRows = $this->dbService->query($updateSql, [$updateTime, $userId]);
         return intval($updateRows); 
     }
 

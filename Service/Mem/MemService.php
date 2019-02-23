@@ -19,7 +19,7 @@ class MemService
      */
     const CONFIG_FILE = '/Config/redis.php';
 
-    public static function getInstance()
+    public static function getMemInstance()
     {
         if (is_null(self::$instance)) {
             self::$instance = new RedisService(require BASE_PATH.self::CONFIG_FILE);

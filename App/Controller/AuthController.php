@@ -42,6 +42,7 @@ class AuthController extends BaseController
         //调微信获取信息
         $responseData = WechatUtils::getWechatSessionKey(APP_ID, APP_SECRET, $jsCode);
 
+        // todo 删除
         $responseData = [
             'openid' => '111',
             'session_key' => '111',
@@ -61,11 +62,12 @@ class AuthController extends BaseController
         $sessionKey = $responseData['session_key'];
         $openId = $responseData['openid'];
 
-        //获取用户信息 
-        // todo 读取用户信息
+        $authService = new AuthService();
+        $authCacheService = new AuthCacheService();
+        $user = new User();
+
         //用户信息,根据openId获取用户信息
-        // $userInfo = (new UserService())->getUserInfoByUserId($openId);
-        $userInfo = [];
+        $userInfo = $user->getUserInfoByOpenId($openId);
 
         if (empty($userInfo)) {
             if (empty($encryptedData) || empty($iv)) {
@@ -74,6 +76,7 @@ class AuthController extends BaseController
             } else {
                 //解密微信加密字符串
                 $decryptData = WechatUtils::decryptData(APP_ID, $sessionKey, $encryptedData, $iv);
+                // todo 删除
                 $decryptData = [
                     'openId' => '123123',
                     'unionId' => '11111',
@@ -92,10 +95,6 @@ class AuthController extends BaseController
                     $this->echoJson(-2, '用户授权失败');
                 }
 
-                $unionId = $decryptData['unionId'];
-                $nickname = $decryptData['nickName'];
-                $avatar = $decryptData['avatarUrl'];
-
                 // 注册用户
                 $nowTime = time();
                 $insertData[] = [
@@ -106,19 +105,43 @@ class AuthController extends BaseController
                     $nowTime,
                     $nowTime,
                 ];
-                $userId = (new User())->addUser($insertData);
-
+                $userId = $user->addUser($insertData);
                 if (empty($userId)) {
                     $this->echoJson(-3, '生成用户失败');
                     return false;
                 }
 
+                // 处理授权生成token
                 $object = $this->handleAuthToken($userId, $sessionKey);
             }
         } else {
-            //3. 处理授权生成token
-            $object = $this->handleAuthToken($userId, $userInfo['is_bind_phone'], $sessionKey);
+            if (!empty($encryptedData) && !empty($iv)) {
+                //解密微信加密字符串
+                $decryptData = WechatUtils::decryptData(APP_ID, $sessionKey, $encryptedData, $iv);
+                // todo 删除
+                $decryptData = [
+                    'openId' => '123123',
+                    'unionId' => '11111',
+                    'nickName' => '11111',
+                    'avatarUrl' => '2222222',
+                ];
+                // 更新用户信息
+                $updateUserResult = $user->updateUserInfoById($userInfo['user_id'], $decryptData['nickName'], $decryptData['avatarUrl'], time());
+                if (empty($updateUserResult)) {
+                    $log = [
+                        'phpFile'      => __FILE__,
+                        'phpCodeLine'  => __LINE__,
+                        'userInfo' => $userInfo,
+                        'decryptDate' => $decryptData,
+                        'updateUserResult' => $updateUserResult
+                    ];
+                    LogUtils::addLog('AUTH', '更新用户信息失败', $log);
+                }
+            }
+
+            $object = $this->handleAuthToken($userInfo['user_id'], $sessionKey);
         }
+
         return $this->echoJson(1, $object);
     }
 
@@ -160,10 +183,15 @@ class AuthController extends BaseController
      */
     private function handleAuthToken($userId, $sessionKey)
     {
-        $userService = new UserService();
-
-        //更新登录(授权)时间
-        $userService->modifyLastLoginTimeByUserId($userId);
+        // 更新用户最后登录时间
+        $updateTimeResult = (new User())->updateUserUpdateTime($userId, time());
+        if (empty($updateTimeResult)) {
+            $log = [
+                'phpFile'      => __FILE__,
+                'phpCodeLine'  => __LINE__,
+            ];
+            LogUtils::addLog('AUTH', '更新用户最后更新时间信息失败', $log);
+        }
 
         //生成token
         $randomStr = StringUtils::createRoundString(28);
