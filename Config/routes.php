@@ -10,7 +10,7 @@ Macaw::get('v1/user', 'Controller\User\ApiUserController@getUserInfo'); // 获�
 
 
 Macaw::$error_callback = function() {
-    (new BaseController())->echoJson(false, '没有对应接口');
+    (new BaseController())->echoJson(false, 'api_not_exit');
 };
 
 Macaw::dispatch();
