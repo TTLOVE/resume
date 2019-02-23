@@ -81,6 +81,16 @@ class AuthService
     {
         $decryptToken = $this->decryptToken($token);
 
+        if ($decryptToken['status']==false) {
+            $returnData = [
+                'status' => false,
+                'msg' => $decryptToken['msg']
+            ];
+            return $returnData;
+        }
+
+        $decryptToken = $decryptToken['data'];
+
         //使用临时token则报错
         if ($decryptToken['userId'] == self::TMP_TOKEN_USER_ID) {
             $returnData = [
