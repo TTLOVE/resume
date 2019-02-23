@@ -42,11 +42,11 @@ class AuthService
             $userRedisData = \json_decode($userRedisData, true);
 
             if (!isset($userRedisData['token']) || $token != $userRedisData['token']) {
-                $returnData = [
+                $returndata = [
                     'status' => false,
                     'msg' => 'user_tmp_token_expired'
                 ];
-                return $returnData;
+                return $returndata;
             }
 
             $authCacheService->setexUserTmpToken(sha1($decryptToken['randomStr']), self::DEFAULT_USER_TOKEN_EFFECTIVE_TIME, $userRedisData);
@@ -131,48 +131,37 @@ class AuthService
     private function decryptToken($token)
     {
         if (\is_null($token) || empty($token)) {
-            $routerStatusKey = 'user_token_error';
-            throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
+            $returnData = [
+                'status' => false,
+                'msg' => 'user_token_error'
+            ];
+            return $returnData;
         }
 
-        $decryptToken = StringUtils::decrypt($token, Config::G('auth.encrypt_key.key'));
+        $decryptToken = StringUtils::decrypt($token, ENCRYPT_KEY);
 
         if ($decryptToken == false) {
-            $routerStatusKey = 'user_token_decrypt_error';
-            throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
+            $returnData = [
+                'status' => false,
+                'msg' => 'user_token_decrypt_error'
+            ];
+            return $returnData;
         }
 
         $decryptToken = \json_decode($decryptToken, true);
 
         if (\is_null($decryptToken) || false == $decryptToken || !isset($decryptToken['userId']) || !isset($decryptToken['timestamp'])) {
-            $routerStatusKey = 'user_token_decrypt_error';
-            throw new TokenException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
+            $returnData = [
+                'status' => false,
+                'msg' => 'user_token_decrypt_error'
+            ];
+            return $returnData;
         }
 
-        return $decryptToken;
-    }
-
-    /**
-     * 验证来源
-     *
-     * @param int $source
-     *
-     * @return true
-     * @throws ConfigNotExistsException
-     * @throws SourceException
-     */
-    public function authSource($source)
-    {
-        $allowSource = [
-            TcUserSource::MINI_PROGRAM
+        return [
+            'status' => true,
+            'data' => $decryptToken
         ];
-
-        if (!in_array($source, $allowSource)) {
-            $routerStatusKey = 'user_source_error';
-            throw new SourceException($this->getRouterMessage($routerStatusKey), $this->getRouterCode($routerStatusKey));
-        }
-
-        return true;
     }
 
     /**
@@ -190,33 +179,5 @@ class AuthService
         $encryptKey = ENCRYPT_KEY;
 
         return StringUtils::generateToken($userId, $randomStr, $timestamp, $encryptKey);
-    }
-
-    /**
-     * 获得路由代码
-     *
-     * @param string $routerKey
-     *
-     * @return string
-     * @throws ConfigNotExistsException
-     */
-    private function getRouterCode($routerKey)
-    {
-        $codeKey = 'router_code.code.' . $routerKey;
-        return Config::G($codeKey);
-    }
-
-    /**
-     * 获得路由信息
-     *
-     * @param string $routerKey
-     *
-     * @return string
-     * @throws ConfigNotExistsException
-     */
-    private function getRouterMessage($routerKey)
-    {
-        $msgKey = 'router_code.message.' . $routerKey;
-        return Config::G($msgKey);
     }
 }
