@@ -1,15 +1,16 @@
 <?php
 
-namespace Service;
+namespace Service\Mail;
+
 use Nette\Mail\Message;
 
 /**
 
- * \Mail
+ * MailService 
 
  */
 
-class Mail extends Message
+class MailService extends Message
 
 {
 

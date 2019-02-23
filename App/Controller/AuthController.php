@@ -113,7 +113,7 @@ class AuthController extends BaseController
                     return false;
                 }
 
-                $object = $this->handleAuthToken($userId, $userInfo['is_bind_phone'], $sessionKey);
+                $object = $this->handleAuthToken($userId, $sessionKey);
             }
         } else {
             //3. 处理授权生成token
@@ -157,7 +157,6 @@ class AuthController extends BaseController
      * @param string $sessionKey  微信sessionKey
      *
      * @return array
-     * @throws ConfigNotExistsException
      */
     private function handleAuthToken($userId, $sessionKey)
     {
@@ -177,16 +176,8 @@ class AuthController extends BaseController
 
         (new AuthCacheService())->setexUserAliveToken($userId, self::DEFAULT_USER_TOKEN_EFFECTIVE_TIME, $data);
 
-        //已开通钛卡
-        $isOpenTimeCard = TimeCardService::OPENED_TIME_CARD;
-        //注册获取钛币
-        $registerTimeCoin = 0;
-
         $object = [
-            'token'              => $token,
-            'is_open_time_card'  => $isOpenTimeCard,
-            'is_bind_phone'      => $isBindPhone,
-            'register_time_coin' => $registerTimeCoin
+            'token' => $token,
         ];
 
         return $object;
