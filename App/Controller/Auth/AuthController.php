@@ -56,7 +56,7 @@ class AuthController extends BaseController
                 'responseData' => $responseData
             ];
             LogUtils::addLog('AUTH', '调微信获取信息失败', $log);
-            $this->echoJson(-1, '用户授权失败');
+            $this->echoJson(-1, 'authorization_fail');
             return false;
         }
 
@@ -91,7 +91,7 @@ class AuthController extends BaseController
                         'responseData' => $responseData
                     ];
                     LogUtils::addLog('AUTH', '解密微信加密字符串失败', $log);
-                    $this->echoJson(-2, '用户授权失败');
+                    $this->echoJson(-2, 'authorization_fail');
                 }
 
                 // 注册用户
@@ -106,7 +106,7 @@ class AuthController extends BaseController
                 ];
                 $userId = $user->addUser($insertData);
                 if (empty($userId)) {
-                    $this->echoJson(-3, '生成用户失败');
+                    $this->echoJson(-3, 'create_user_fail');
                     return false;
                 }
 

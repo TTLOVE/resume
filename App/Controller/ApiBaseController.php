@@ -19,7 +19,7 @@ class ApiBaseController extends BaseController
         $userToken = $this->getUserToken();
         // 如果头部信息不为空
         if (empty($userToken))  { 
-            $this->echoJson(false, '用户信息不存在');
+            $this->echoJson(false, 'token_not_exit');
             exit();
         }
 

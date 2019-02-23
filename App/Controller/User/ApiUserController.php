@@ -25,6 +25,6 @@ class ApiUserController extends ApiBaseController
         $userId = $this->getUserId();
         // 根据用户id获取用户信息
         $userInfo = (new User())->getUserInfoById($userId);
-        $this->echoJson(true, '获取成功', $userInfo);
+        $this->echoJson(true, 'success', $userInfo);
     }
 }
