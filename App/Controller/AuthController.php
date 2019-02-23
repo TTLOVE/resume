@@ -62,8 +62,6 @@ class AuthController extends BaseController
         $sessionKey = $responseData['session_key'];
         $openId = $responseData['openid'];
 
-        $authService = new AuthService();
-        $authCacheService = new AuthCacheService();
         $user = new User();
 
         //用户信息,根据openId获取用户信息

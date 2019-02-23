@@ -52,7 +52,7 @@ class User
     public function getUserInfoByOpenId($openId)
     {
         $sql = 'select * from ' . $this->table . ' where `open_id` = ?';
-        $userInfo = $this->db->row($sql, [$openId]);
+        $userInfo = $this->dbService->row($sql, [$openId]);
         if (empty($userInfo)) {
             return [];
         } else {
@@ -70,7 +70,7 @@ class User
     public function getUserInfoById($userId)
     {
         $sql = 'select * from ' . $this->table . ' where `user_id` = ?';
-        $userInfo = $this->db->row($sql, [$userId]);
+        $userInfo = $this->dbService->row($sql, [$userId]);
         if (empty($userInfo)) {
             return [];
         } else {
